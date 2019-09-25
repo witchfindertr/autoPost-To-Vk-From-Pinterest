@@ -3,6 +3,7 @@ autoPost To Vk groups from Pinterest boards
 
 Create tables in youre MySQL database
 
+```go
 create table curs
 (
   id       int auto_increment
@@ -40,3 +41,4 @@ create table pintArtPic
   public     tinyint default 0 not null,
   idPin      bigint            not null
 );
+```
