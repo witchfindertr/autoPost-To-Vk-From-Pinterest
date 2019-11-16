@@ -1,16 +1,20 @@
 package models
 
-const PIN_FIELDS = "id,link,note,url,attribution,color,board,counts,created_at,creator,image,media,metadata,original_link"
+const PIN_FIELDS = "id,link,note,url,attribution,color,board,counts,created_at,image,media,metadata,original_link"
 
 type PinterestIni struct {
-	Token     string
+	Token    string
 	BoardPic string
 	BoardVid string
-	Iter      int8
-	PinUser   string
+	Iter     int8
+	PinUser  string
 }
 
 type Pinterest struct {
+	Type    string `json:"type"`
+	Message string `json:"message"`
+	Param   string `json:"param"`
+
 	Data []struct {
 		Attribution interface{} `json:"attribution"`
 		Creator     struct {

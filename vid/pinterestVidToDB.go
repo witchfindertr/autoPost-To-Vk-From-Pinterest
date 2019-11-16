@@ -24,7 +24,7 @@ func PinterestVidToDB() error {
 	var writes bool
 	var media string
 	var pages models.Pages
-	var res  models.Pinterest
+	var res models.Pinterest
 	var pinIni models.PinterestIni
 
 	// Подключение к базе данных  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -50,7 +50,7 @@ func PinterestVidToDB() error {
 							break
 						}
 					} else { // Если есть - считать  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-						if err = req.Db.Raw("SELECT * FROM `curs`  WHERE `group` = '" + pinIni.BoardVid+ "';").Find(&pages).Error; err == nil {
+						if err = req.Db.Raw("SELECT * FROM `curs`  WHERE `group` = '" + pinIni.BoardVid + "';").Find(&pages).Error; err == nil {
 							cur = pages.Cursor // обновить локальный курсор ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 						} else {
 							err = errors.New("DB error SELECT FROM curs: " + fmt.Sprint(err))
@@ -64,9 +64,9 @@ func PinterestVidToDB() error {
 						// Узнать количество оставшихся запросов ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 						limit := models.GetRatelimit(request)
 
-						helpers.Add2Log("PinterestPicToDB","Limit "+fmt.Sprint(limit.Limit))
-						helpers.Add2Log("PinterestPicToDB","Refresh "+fmt.Sprint(limit.Refresh))
-						helpers.Add2Log("PinterestPicToDB","Remaining "+fmt.Sprint(limit.Remaining))
+						helpers.Add2Log("PinterestPicToDB", "Limit "+fmt.Sprint(limit.Limit))
+						helpers.Add2Log("PinterestPicToDB", "Refresh "+fmt.Sprint(limit.Refresh))
+						helpers.Add2Log("PinterestPicToDB", "Remaining "+fmt.Sprint(limit.Remaining))
 
 						// выход из цикла если лимит исчерпан  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 						if limit.Remaining == 0 {
@@ -80,6 +80,10 @@ func PinterestVidToDB() error {
 						if jss, err := ioutil.ReadAll(request.Body); err == nil {
 							// Распарсить ответ в структуру ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							if err := json.Unmarshal([]byte(jss), &res); err == nil {
+
+								if len(res.Message) > 5 { // -- Если случилась ошибка запроса ---------------------------------
+									helpers.Add2Log("errorApi: ", "mess: "+res.Message, "param: "+res.Param)
+								}
 
 								if limit.Remaining != 0 {
 									cur = res.Page.Cursor
@@ -97,6 +101,8 @@ func PinterestVidToDB() error {
 										link := firstPin.Image.Original.URL
 										h := fmt.Sprint(firstPin.Image.Original.Height)
 										w := fmt.Sprint(firstPin.Image.Original.Width)
+
+										fmt.Println("orLink:	" + orLink)
 
 										// опеределить тип видео ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 										if strings.Contains(firstPin.OriginalLink, "youtube") {
@@ -139,7 +145,7 @@ func PinterestVidToDB() error {
 									req.Db.Raw("SELECT * FROM `curs`  WHERE `group` = '?';", pinIni.BoardVid).Find(&pages)
 								} else {
 									// если запись произвелась - сбросить переменную writes на 0 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-									req.Db.Table("curs").Exec("UPDATE `curs` SET `writes` = 0 WHERE `curs`.`group` = '" + pinIni.BoardVid + "';" )
+									req.Db.Table("curs").Exec("UPDATE `curs` SET `writes` = 0 WHERE `curs`.`group` = '" + pinIni.BoardVid + "';")
 								}
 
 								if pages.Writes >= pinIni.Iter {
@@ -156,8 +162,10 @@ func PinterestVidToDB() error {
 									req.Db.Table("curs").Exec("UPDATE `curs` SET `writes` = 0 WHERE `curs`.`group` = '" + pinIni.BoardVid + "';")
 									break
 								}
-								request.Body.Close()
-
+								if err = request.Body.Close(); err != nil {
+									err = errors.New("error request.Body.Close(): " + fmt.Sprint(err))
+									break
+								}
 							} else {
 								err = errors.New("error JSON unmarshaling failed: " + fmt.Sprint(err))
 								break
@@ -182,5 +190,5 @@ func PinterestVidToDB() error {
 		err = errors.New("fail base connect: " + fmt.Sprint(err))
 	}
 
-return  err
+	return err
 }
