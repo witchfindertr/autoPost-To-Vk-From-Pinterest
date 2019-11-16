@@ -1,7 +1,8 @@
-# autoPostToVkFromPinterest
-autoPost To Vk groups from Pinterest boards
+# Automatic posting to vk.com groups from Pinterest boards
+Automatic posting to vk.com groups from Pinterest boards
 
-Create tables in youre MySQL database
+
+First Create tables in youre MySQL database
 
 ```go
 create table curs
