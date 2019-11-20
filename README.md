@@ -20,6 +20,8 @@
 ./autoPost postPicToVk - публикует картинку на стену группы, и в альбом группы
 
 
+./autoPost YouTubePlayListToDB - парсит контент с видео с уже заполненного плейлиста Youtube
+
 ./autoPost pinVidToDB - парсит контент с youtube-видеороликами с уже заполненой доски Pinterest
 
 ./autoPost postVidToVkGroupWall - публикует видео на стену группы
