@@ -1,6 +1,9 @@
-# Automatic posting to vk.com groups from Pinterest boards
-Automatic posting to vk.com groups from Pinterest boards
+# Автоматический постинг в группы VK.com из Pinterest
+скрипты сканируют специально подготовленные доски в Pinterest, заносят контент в базу данных
 
+затем автоматически публикуют в группы VK.com
+
+Automatic posting to vk.com groups from Pinterest boards
 
 First Create tables in youre MySQL database
 
